@@ -28,7 +28,7 @@ public abstract class Character
             _health = value;
             ChangedCharacteristics();
             if (_health <= 0)
-                ActionEvent?.Invoke(new CharacterActionEvent(this, CharacterActionEvent.ActionNoTarget.Dead));
+                ActionEvent?.Invoke(new CharacterActionEvent(new CharacterActionEvent.NoTarget(this, CharacterActionEvent.ActionNoTarget.Dead)));
         }
     }
     public int Attack { get => _attack; protected set => _attack = value; }
@@ -63,13 +63,6 @@ public abstract class Character
         {
             CountTurns++;
             NormalAttack();
-        }
-        else
-        {
-            CountTurns = 0;
-            ActionEvent?.Invoke(new CharacterActionEvent(CharacterActionEvent.ActionSystem.EndRaund));
-        }
-    //    Debug.Log(Search.ToString(EnemyComand));
         /*  if (Energy >= 100)
           {
               Energy = 0;
@@ -80,13 +73,19 @@ public abstract class Character
               Energy += 25;
               SpecialAttack();
           }*/
+        }
+        else
+        {
+            CountTurns = 0;
+            ActionEvent?.Invoke(new CharacterActionEvent(new CharacterActionEvent.System(CharacterActionEvent.ActionSystem.EndRaund)));
+        }
     }
 
     public virtual void ActionResult(CharacterActionEvent action)
     {
         if (action.Act == CharacterActionEvent.Action.OnTarget)
         {
-            switch (action.ActOnTarget)
+            switch (action.ActOnTarget.OnTargetEnum)
             {
                 case CharacterActionEvent.ActionOnTarget.AttackResult:
                     break;
@@ -100,19 +99,19 @@ public abstract class Character
     {
         if (action.Act == CharacterActionEvent.Action.OnTarget)
         {
-            switch (action.ActOnTarget)
+            switch (action.ActOnTarget.OnTargetEnum)
             {
                 case CharacterActionEvent.ActionOnTarget.AttackResult:
-                    ActionEvent?.Invoke(new CharacterActionEvent(this, CharacterActionEvent.ActionExperiense.Attack, action.Value));
+                    ActionEvent?.Invoke(new CharacterActionEvent(new CharacterActionEvent.Experience(this, CharacterActionEvent.ActionExperience.Attack, action.ActOnTarget.Value)));
                     break;
                 case CharacterActionEvent.ActionOnTarget.HealResult:
-                    ActionEvent?.Invoke(new CharacterActionEvent(this, CharacterActionEvent.ActionExperiense.Heal, action.Value));
+                    ActionEvent?.Invoke(new CharacterActionEvent(new CharacterActionEvent.Experience(this, CharacterActionEvent.ActionExperience.Heal, action.ActOnTarget.Value)));
                     break;
                 case CharacterActionEvent.ActionOnTarget.Attack:
-                    TakeDamage(action.FromWhom, action.Value);
+                    TakeDamage(action.ActOnTarget.FromWhom, action.ActOnTarget.Value);
                     break;
                 case CharacterActionEvent.ActionOnTarget.Heal:
-                    TakeHeal(action.FromWhom, action.Value);
+                    TakeHeal(action.ActOnTarget.FromWhom, action.ActOnTarget.Value);
                     break;
             }
         }
@@ -122,15 +121,15 @@ public abstract class Character
     public void ChangedCharacteristics()
     {
         Characteristics characteristics = new Characteristics(MaxHealth, Health, Attack, Armor, Energy);
-        ActionEvent?.Invoke(new CharacterActionEvent(this, CharacterActionEvent.ActionNoTarget.ChancgedInfo, characteristics));
+        ActionEvent?.Invoke(new CharacterActionEvent(new CharacterActionEvent.ChangedInfo(this, characteristics)));
     }
 
 
     protected virtual void TakeDamage(Character fromWhom, int attack)
     {
         int damage = DamageCalculation(attack, Armor);
-        ActionEvent?.Invoke(new CharacterActionEvent(fromWhom, this, CharacterActionEvent.ActionOnTarget.AttackResult, Health > damage ? damage : Health));
-        ActionEvent?.Invoke(new CharacterActionEvent(this, CharacterActionEvent.ActionExperiense.Health, Health > damage ? damage : Health));
+        ActionEvent?.Invoke(new CharacterActionEvent(new CharacterActionEvent.OnTarget(fromWhom, this, CharacterActionEvent.ActionOnTarget.AttackResult, Health > damage ? damage : Health)));
+        ActionEvent?.Invoke(new CharacterActionEvent(new CharacterActionEvent.Experience(this, CharacterActionEvent.ActionExperience.Health, Health > damage ? damage : Health)));
         Health -= damage;
     }
 
@@ -138,7 +137,7 @@ public abstract class Character
     {
         heal = (heal + Health > MaxHealth) ? MaxHealth - Health : heal;
         Health += heal;
-        ActionEvent?.Invoke(new CharacterActionEvent(fromWhom, this, CharacterActionEvent.ActionOnTarget.HealResult, heal));
+        ActionEvent?.Invoke(new CharacterActionEvent(new CharacterActionEvent.OnTarget(fromWhom, this, CharacterActionEvent.ActionOnTarget.HealResult, heal)));
     }
 
     protected abstract void SpecialAttack();
@@ -149,12 +148,12 @@ public abstract class Character
         int damage = attack - armor;
         if (attack * 0.3f > damage)
         {
-            ActionEvent?.Invoke(new CharacterActionEvent(this, CharacterActionEvent.ActionExperiense.Armor, attack * 7 / 10));
+            ActionEvent?.Invoke(new CharacterActionEvent(new CharacterActionEvent.Experience(this, CharacterActionEvent.ActionExperience.Armor, attack * 7 / 10)));
             return (int)(attack * 0.3f);
         }
         else
         {
-            ActionEvent?.Invoke(new CharacterActionEvent(this, CharacterActionEvent.ActionExperiense.Armor, armor));
+            ActionEvent?.Invoke(new CharacterActionEvent(new CharacterActionEvent.Experience(this, CharacterActionEvent.ActionExperience.Armor, armor)));
             return damage;
         }
     }

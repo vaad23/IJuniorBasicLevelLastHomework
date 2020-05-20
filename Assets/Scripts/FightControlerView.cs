@@ -49,8 +49,12 @@ public class FightControlerView : MonoBehaviour
             }
         }
 
-        for (_countAction = 0; _countAction < _allAction.Count && _allAction[_countAction].ActSystem != CharacterActionEvent.ActionSystem.StartFight; _countAction++)
+        for (_countAction = 0; _countAction < _allAction.Count ; _countAction++)
         {
+            if (_allAction[_countAction].Act == CharacterActionEvent.Action.System)
+                if (_allAction[_countAction].ActSystem.SystemEnum != CharacterActionEvent.ActionSystem.StartFight)
+                    return;
+
             ActionHandler(_allAction[_countAction]);
         }
     }
@@ -73,32 +77,29 @@ public class FightControlerView : MonoBehaviour
         switch (action.Act)
         {
             case CharacterActionEvent.Action.Experience:
-                switch (action.ActExperiense)
+                switch (action.ActExperience.ExperienceEnum)
                 {
-                    case CharacterActionEvent.ActionExperiense.Attack:
+                    case CharacterActionEvent.ActionExperience.Attack:
                         break;
-                    case CharacterActionEvent.ActionExperiense.Armor:
+                    case CharacterActionEvent.ActionExperience.Armor:
                         break;
-                    case CharacterActionEvent.ActionExperiense.Heal:
+                    case CharacterActionEvent.ActionExperience.Heal:
                         break;
-                    case CharacterActionEvent.ActionExperiense.Health:
+                    case CharacterActionEvent.ActionExperience.Health:
                         break;
                 }
                 break;
             case CharacterActionEvent.Action.NoTarget:
-                switch (action.ActNoTarget)
+                switch (action.ActNoTarget.NoTargetEnum)
                 {
                     case CharacterActionEvent.ActionNoTarget.Create:
                         break;
                     case CharacterActionEvent.ActionNoTarget.Dead:
                         break;
-                    case CharacterActionEvent.ActionNoTarget.ChancgedInfo:
-                        _characterViews[action.FromWhom].ChangeCharacteristic(action.ChangeCharacteristics);
-                        break;
                 }
                 break;
             case CharacterActionEvent.Action.OnTarget:
-                switch (action.ActOnTarget)
+                switch (action.ActOnTarget.OnTargetEnum)
                 {
                     case CharacterActionEvent.ActionOnTarget.Attack:
                         break;
@@ -110,8 +111,11 @@ public class FightControlerView : MonoBehaviour
                         break;
                 }
                 break;
+            case CharacterActionEvent.Action.ChancgedInfo:
+                _characterViews[action.ActChengedInfo.FromWhom].ChangeCharacteristic(action.ActChengedInfo.Characteristic);
+                break;
             case CharacterActionEvent.Action.System:
-                switch (action.ActSystem)
+                switch (action.ActSystem.SystemEnum)
                 {
                     case CharacterActionEvent.ActionSystem.StartFight:
                         _timer = 1;

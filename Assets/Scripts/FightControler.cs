@@ -35,7 +35,7 @@ public class FightControler : MonoBehaviour
         comandA = new CharacterPlacement(_comandA);
         comandB = new CharacterPlacement(_comandB);
 
-        OnAction(new CharacterActionEvent(CharacterActionEvent.ActionSystem.StartFight));
+        OnAction(new CharacterActionEvent(new CharacterActionEvent.System(CharacterActionEvent.ActionSystem.StartFight)));
 
         _isFinishGame = false;
         _queueNumber = 0;
@@ -83,51 +83,51 @@ public class FightControler : MonoBehaviour
         switch (action.Act)
         {
             case CharacterActionEvent.Action.Experience:
-                switch (action.ActExperiense)
+                switch (action.ActExperience.ExperienceEnum)
                 {
-                    case CharacterActionEvent.ActionExperiense.Attack:
-                        _experiences[action.FromWhom].AddAttack(action.Value);
+                    case CharacterActionEvent.ActionExperience.Attack:
+                        _experiences[action.ActExperience.FromWhom].AddAttack(action.ActExperience.Value);
                         break;
-                    case CharacterActionEvent.ActionExperiense.Armor:
-                        _experiences[action.FromWhom].AddArmor(action.Value);
+                    case CharacterActionEvent.ActionExperience.Armor:
+                        _experiences[action.ActExperience.FromWhom].AddArmor(action.ActExperience.Value);
                         break;
-                    case CharacterActionEvent.ActionExperiense.Heal:
-                        _experiences[action.FromWhom].AddHeal(action.Value);
+                    case CharacterActionEvent.ActionExperience.Heal:
+                        _experiences[action.ActExperience.FromWhom].AddHeal(action.ActExperience.Value);
                         break;
-                    case CharacterActionEvent.ActionExperiense.Health:
-                        _experiences[action.FromWhom].AddHealth(action.Value);
+                    case CharacterActionEvent.ActionExperience.Health:
+                        _experiences[action.ActExperience.FromWhom].AddHealth(action.ActExperience.Value);
                         break;
                 }
                 break;
             case CharacterActionEvent.Action.NoTarget:
-                switch (action.ActNoTarget)
+                switch (action.ActNoTarget.NoTargetEnum)
                 {
                     case CharacterActionEvent.ActionNoTarget.Create:
                         break;
                     case CharacterActionEvent.ActionNoTarget.Dead:
-                        RemoveQueue(action.FromWhom);
+                        RemoveQueue(action.ActNoTarget.FromWhom);
                         break;
                 }
                 break;
             case CharacterActionEvent.Action.OnTarget:
-                switch (action.ActOnTarget)
+                switch (action.ActOnTarget.OnTargetEnum)
                 {
                     case CharacterActionEvent.ActionOnTarget.Attack:
-                        action.AboutWhom.TakeAction(action);
+                        action.ActOnTarget.AboutWhom.TakeAction(action);
                         break;
                     case CharacterActionEvent.ActionOnTarget.Heal:
-                        action.AboutWhom.TakeAction(action);
+                        action.ActOnTarget.AboutWhom.TakeAction(action);
                         break;
                     case CharacterActionEvent.ActionOnTarget.AttackResult:
-                        action.FromWhom.TakeAction(action);
+                        action.ActOnTarget.FromWhom.TakeAction(action);
                         break;
                     case CharacterActionEvent.ActionOnTarget.HealResult:
-                        action.FromWhom.TakeAction(action);
+                        action.ActOnTarget.FromWhom.TakeAction(action);
                         break;
                 }
                 break;
             case CharacterActionEvent.Action.System:
-                switch (action.ActSystem)
+                switch (action.ActSystem.SystemEnum)
                 {
                     case CharacterActionEvent.ActionSystem.StartFight:
                         break;

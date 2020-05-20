@@ -10,18 +10,18 @@ public class TankCharacter : Character
     {
         Character enemy = Search.FirstPosition(EnemyComand);
         if (enemy == null)
-            CreateAction(new CharacterActionEvent(CharacterActionEvent.ActionSystem.EndGame));
+            CreateAction(new CharacterActionEvent(new CharacterActionEvent.System(CharacterActionEvent.ActionSystem.EndGame)));
         else
-            CreateAction(new CharacterActionEvent(this, enemy, CharacterActionEvent.ActionOnTarget.Attack, Attack));
+            CreateAction(new CharacterActionEvent(new CharacterActionEvent.OnTarget(this, enemy, CharacterActionEvent.ActionOnTarget.Attack, Attack)));
     }
 
     protected override void SpecialAttack()
     {
         Character enemy = Search.FirstPosition(EnemyComand);
         if (enemy == null)
-            CreateAction(new CharacterActionEvent(CharacterActionEvent.ActionSystem.EndGame));
+            CreateAction(new CharacterActionEvent(new CharacterActionEvent.System(CharacterActionEvent.ActionSystem.EndGame)));
         else
-            CreateAction(new CharacterActionEvent(this, enemy, CharacterActionEvent.ActionOnTarget.Attack, Attack));
+            CreateAction(new CharacterActionEvent(new CharacterActionEvent.OnTarget(this, enemy, CharacterActionEvent.ActionOnTarget.Attack, Attack)));
     }
 }
 
@@ -34,18 +34,18 @@ public class WariorCharacter : Character
     {
         Character enemy = Search.FirstPosition(EnemyComand);
         if (enemy == null)
-            CreateAction(new CharacterActionEvent(CharacterActionEvent.ActionSystem.EndGame));
+            CreateAction(new CharacterActionEvent(new CharacterActionEvent.System(CharacterActionEvent.ActionSystem.EndGame)));
         else
-            CreateAction(new CharacterActionEvent(this, enemy, CharacterActionEvent.ActionOnTarget.Attack, Attack));
+            CreateAction(new CharacterActionEvent(new CharacterActionEvent.OnTarget(this, enemy, CharacterActionEvent.ActionOnTarget.Attack, Attack)));
     }
 
     protected override void SpecialAttack()
     {
         Character enemy = Search.FirstPosition(EnemyComand);
         if (enemy == null)
-            CreateAction(new CharacterActionEvent(CharacterActionEvent.ActionSystem.EndGame));
+            CreateAction(new CharacterActionEvent(new CharacterActionEvent.System(CharacterActionEvent.ActionSystem.EndGame)));
         else
-            CreateAction(new CharacterActionEvent(this, enemy, CharacterActionEvent.ActionOnTarget.Attack, Attack));
+            CreateAction(new CharacterActionEvent(new CharacterActionEvent.OnTarget(this, enemy, CharacterActionEvent.ActionOnTarget.Attack, Attack)));
     }
 }
 
@@ -57,17 +57,17 @@ public class ShooterCharacter : Character
     {
         Character enemy = Search.FirstPosition(EnemyComand);
         if (enemy == null)
-            CreateAction(new CharacterActionEvent(CharacterActionEvent.ActionSystem.EndGame));
+            CreateAction(new CharacterActionEvent(new CharacterActionEvent.System(CharacterActionEvent.ActionSystem.EndGame)));
         else
-            CreateAction(new CharacterActionEvent(this, enemy, CharacterActionEvent.ActionOnTarget.Attack, Attack));
+            CreateAction(new CharacterActionEvent(new CharacterActionEvent.OnTarget(this, enemy, CharacterActionEvent.ActionOnTarget.Attack, Attack)));
     }
 
     protected override void SpecialAttack()
     {
         Character enemy = Search.FirstPosition(EnemyComand);
         if (enemy == null)
-            CreateAction(new CharacterActionEvent(CharacterActionEvent.ActionSystem.EndGame));
+            CreateAction(new CharacterActionEvent(new CharacterActionEvent.System(CharacterActionEvent.ActionSystem.EndGame)));
         else
-            CreateAction(new CharacterActionEvent(this, enemy, CharacterActionEvent.ActionOnTarget.Attack, Attack));
+            CreateAction(new CharacterActionEvent(new CharacterActionEvent.OnTarget(this, enemy, CharacterActionEvent.ActionOnTarget.Attack, Attack)));
     }
 }
