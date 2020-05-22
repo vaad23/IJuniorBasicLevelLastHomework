@@ -555,6 +555,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2865106563619774793}
   - component: {fileID: 4410575939040041568}
+  - component: {fileID: 8401844719452733879}
   m_Layer: 0
   m_Name: PrefabCharacter
   m_TagString: Untagged
@@ -599,6 +600,26 @@ MonoBehaviour:
   _attackText: {fileID: 8879800388207809220}
   _armorText: {fileID: 3314131574292425468}
   _energyText: {fileID: 4967564599140485365}
+  _animator: {fileID: 8401844719452733879}
+--- !u!95 &8401844719452733879
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4991370586799213450}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 52daaac39582fd341ad62d32e158da98, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &5100888517543890416
 GameObject:
   m_ObjectHideFlags: 0

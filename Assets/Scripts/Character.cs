@@ -33,7 +33,18 @@ public abstract class Character
     }
     public int Attack { get => _attack; protected set => _attack = value; }
     public int Armor { get => _armor; protected set => _armor = value; }
-    public int Energy { get => _energy; protected set => _energy = value; }
+    public int Energy
+    {
+        get
+        {
+            return _energy;
+        }
+        protected set
+        {
+            _energy = value;
+            ChangedCharacteristics();
+        }
+    }
     public CharacterPlacement MyComand => _myComand;
     public CharacterPlacement EnemyComand => _enemyComand;
 
@@ -62,17 +73,16 @@ public abstract class Character
         if (CountTurns < 1)
         {
             CountTurns++;
-            NormalAttack();
-        /*  if (Energy >= 100)
+          if (Energy < 100)
           {
-              Energy = 0;
+              Energy += 25;
               NormalAttack();
           }
           else
           {
-              Energy += 25;
+              Energy = 0;
               SpecialAttack();
-          }*/
+          }
         }
         else
         {
@@ -131,6 +141,7 @@ public abstract class Character
         ActionEvent?.Invoke(new CharacterActionEvent(new CharacterActionEvent.OnTarget(fromWhom, this, CharacterActionEvent.ActionOnTarget.AttackResult, Health > damage ? damage : Health)));
         ActionEvent?.Invoke(new CharacterActionEvent(new CharacterActionEvent.Experience(this, CharacterActionEvent.ActionExperience.Health, Health > damage ? damage : Health)));
         Health -= damage;
+        Energy += 5;
     }
 
     protected virtual void TakeHeal(Character fromWhom, int heal)
@@ -172,15 +183,22 @@ public class TargetSearch
     public Character FirstPosition(CharacterPlacement placement)
     {
         for (int i = 0; i < placement.LengthLine; i++)
-        {
             for (int j = 0; j < placement.LengthColumn; j++)
-            {
                 if (placement.TrySearch(i, j, out Character character) && character.Health > 0)
                     return character;
-            }
-        }
-
         return null;
+    }
+
+    public List<Character> AllLivingCharacters(CharacterPlacement placement)
+    {
+        List<Character> characters = new List<Character>();
+
+        for (int i = 0; i < placement.LengthLine; i++)
+            for (int j = 0; j < placement.LengthColumn; j++)
+                if (placement.TrySearch(i, j, out Character character) && character.Health > 0)
+                    characters.Add(character);
+
+        return characters;
     }
 
     /* public string ToString(CharacterPlacement placement)

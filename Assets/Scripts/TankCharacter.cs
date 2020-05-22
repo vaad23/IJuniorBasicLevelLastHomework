@@ -17,11 +17,7 @@ public class TankCharacter : Character
 
     protected override void SpecialAttack()
     {
-        Character enemy = Search.FirstPosition(EnemyComand);
-        if (enemy == null)
-            CreateAction(new CharacterActionEvent(new CharacterActionEvent.System(CharacterActionEvent.ActionSystem.EndGame)));
-        else
-            CreateAction(new CharacterActionEvent(new CharacterActionEvent.OnTarget(this, enemy, CharacterActionEvent.ActionOnTarget.Attack, Attack)));
+        CreateAction(new CharacterActionEvent(new CharacterActionEvent.OnTarget(this, this, CharacterActionEvent.ActionOnTarget.Heal, Attack)));
     }
 }
 
@@ -45,7 +41,7 @@ public class WariorCharacter : Character
         if (enemy == null)
             CreateAction(new CharacterActionEvent(new CharacterActionEvent.System(CharacterActionEvent.ActionSystem.EndGame)));
         else
-            CreateAction(new CharacterActionEvent(new CharacterActionEvent.OnTarget(this, enemy, CharacterActionEvent.ActionOnTarget.Attack, Attack)));
+            CreateAction(new CharacterActionEvent(new CharacterActionEvent.OnTarget(this, enemy, CharacterActionEvent.ActionOnTarget.Attack, Attack * 2)));
     }
 }
 
@@ -64,10 +60,10 @@ public class ShooterCharacter : Character
 
     protected override void SpecialAttack()
     {
-        Character enemy = Search.FirstPosition(EnemyComand);
-        if (enemy == null)
-            CreateAction(new CharacterActionEvent(new CharacterActionEvent.System(CharacterActionEvent.ActionSystem.EndGame)));
-        else
-            CreateAction(new CharacterActionEvent(new CharacterActionEvent.OnTarget(this, enemy, CharacterActionEvent.ActionOnTarget.Attack, Attack)));
+        List<Character> enemies = Search.AllLivingCharacters(EnemyComand);
+        foreach (var enemy in enemies)
+        {
+            CreateAction(new CharacterActionEvent(new CharacterActionEvent.OnTarget(this, enemy, CharacterActionEvent.ActionOnTarget.Attack, Attack / 2)));
+        }
     }
 }

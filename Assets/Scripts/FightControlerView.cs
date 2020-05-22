@@ -52,11 +52,12 @@ public class FightControlerView : MonoBehaviour
         for (_countAction = 0; _countAction < _allAction.Count ; _countAction++)
         {
             if (_allAction[_countAction].Act == CharacterActionEvent.Action.System)
-                if (_allAction[_countAction].ActSystem.SystemEnum != CharacterActionEvent.ActionSystem.StartFight)
+                if (_allAction[_countAction].ActSystem.SystemEnum == CharacterActionEvent.ActionSystem.StartFight)
                     return;
 
             ActionHandler(_allAction[_countAction]);
         }
+
     }
 
     private void Update()
@@ -102,8 +103,13 @@ public class FightControlerView : MonoBehaviour
                 switch (action.ActOnTarget.OnTargetEnum)
                 {
                     case CharacterActionEvent.ActionOnTarget.Attack:
+                        _characterViews[action.ActOnTarget.FromWhom].SetAnimation(FightCharacterView.State.Attack);
+                        _characterViews[action.ActOnTarget.AboutWhom].SetAnimation(FightCharacterView.State.TakeDamage);
                         break;
                     case CharacterActionEvent.ActionOnTarget.Heal:
+                        if (action.ActOnTarget.FromWhom != action.ActOnTarget.FromWhom)
+                            _characterViews[action.ActOnTarget.FromWhom].SetAnimation(FightCharacterView.State.Attack);
+                        _characterViews[action.ActOnTarget.AboutWhom].SetAnimation(FightCharacterView.State.TakeHeal);
                         break;
                     case CharacterActionEvent.ActionOnTarget.AttackResult:
                         break;
@@ -118,7 +124,7 @@ public class FightControlerView : MonoBehaviour
                 switch (action.ActSystem.SystemEnum)
                 {
                     case CharacterActionEvent.ActionSystem.StartFight:
-                        _timer = 1;
+                        _timer = 1f;
                         break;
                     case CharacterActionEvent.ActionSystem.EndRaund:
                         _timer = 1f;

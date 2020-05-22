@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(Animator))]
 public class FightCharacterView : MonoBehaviour
 {
     [SerializeField] private int _maxHealth;
@@ -10,12 +11,12 @@ public class FightCharacterView : MonoBehaviour
     [SerializeField] private int _attack;
     [SerializeField] private int _armor;
     [SerializeField] private int _energy;
-
     [SerializeField] private Text _maxHealthText;
     [SerializeField] private Text _healthText;
     [SerializeField] private Text _attackText;
     [SerializeField] private Text _armorText;
     [SerializeField] private Text _energyText;
+    [SerializeField] private Animator _animator;
 
     public int MaxHealth
     {
@@ -76,9 +77,15 @@ public class FightCharacterView : MonoBehaviour
             _energy = value;
             _energyText.text = _energy.ToString();
         }
+    } 
+    
+    public enum State
+    {
+        Idle=0,
+        TakeDamage = 1,
+        TakeHeal = 2,
+        Attack = 3
     }
-
-
 
     public void ChangeCharacteristic(Characteristics characteristics)
     {
@@ -87,5 +94,10 @@ public class FightCharacterView : MonoBehaviour
         Attack = characteristics.Attack;
         Armor = characteristics.Armor;
         Energy = characteristics.Energy;
+    }
+
+    public void SetAnimation(State state)
+    {
+        _animator.SetTrigger(state.ToString());
     }
 }
