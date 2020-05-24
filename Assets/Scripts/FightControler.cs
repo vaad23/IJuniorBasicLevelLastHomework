@@ -5,35 +5,28 @@ using UnityEngine;
 public class FightControler : MonoBehaviour
 {
     [SerializeField] private FightControlerView _view;
-    [SerializeField] private CharacterCharacteristics _tank;
-    [SerializeField] private CharacterCharacteristics _warior;
-    [SerializeField] private CharacterCharacteristics _shooter;
     [SerializeField] private List<CharacterExperience> _experienceArray;
     [SerializeField] private bool _isFinishGame;
 
-    private CharacterPlacement _comandA;
-    private CharacterPlacement _comandB;
-    private List<Character> _characters = new List<Character>();
-    private List<Character> _queue = new List<Character>();
+    private List<BattleCharacter> _characters = new List<BattleCharacter>();
+    private List<BattleCharacter> _queue = new List<BattleCharacter>();
     private List<CharacterActionEvent> _allAction = new List<CharacterActionEvent>();
     private List<CharacterActionEvent> _actionQueue = new List<CharacterActionEvent>();
-    private Dictionary<Character, CharacterExperience> _experiences;
+    private Dictionary<BattleCharacter, CharacterExperience> _experiences;
+    private int _queueNumber;
 
-    public List<CharacterActionEvent> Fight(out CharacterPlacement comandA,out CharacterPlacement comandB)
+    public List<CharacterActionEvent> Fight(BattlePlacement battlePlacement)
     {
-        _comandA = new CharacterPlacement(1, 3);
-        _comandB = new CharacterPlacement(1, 3);
-        _experiences = new Dictionary<Character, CharacterExperience>();
+        _experiences = new Dictionary<BattleCharacter, CharacterExperience>();
 
-        AddTankCharacter(_comandA, _comandB, _tank, 0, 0);
-        AddWariorCharacter(_comandA, _comandB, _warior, 0, 1);
-        AddWariorCharacter(_comandA, _comandB, _warior, 0, 2);
-        AddTankCharacter(_comandB, _comandA, _tank, 0, 0);
-        AddShooterCharacter(_comandB, _comandA, _shooter, 0, 1);
-        AddShooterCharacter(_comandB, _comandA, _shooter, 0, 2);
-
-        comandA = new CharacterPlacement(_comandA);
-        comandB = new CharacterPlacement(_comandB);
+        foreach (var member in battlePlacement.Search.AllTeam())
+        {
+            member.ActionEvent += OnAction;
+            member.ChangedCharacteristics();
+            _characters.Add(member);
+            _queue.Add(member);
+            _experiences.Add(member, new CharacterExperience());
+        }
 
         OnAction(new CharacterActionEvent(new CharacterActionEvent.System(CharacterActionEvent.ActionSystem.StartFight)));
 
@@ -58,11 +51,19 @@ public class FightControler : MonoBehaviour
         }
 
         ChanceEcperienceInInspector();
+        foreach (var member in battlePlacement.Search.AllTeam())
+        {
+            member.ActionEvent -= OnAction;
+        }
 
         return _allAction;
     }
+        /*
 
-    private int _queueNumber;
+      private void AddCharacter(CharacterPlacement fromPlacement, CharacterPlacement aboutPlacement, BattleCharacter character, int placeLine, int placeСolumn)
+      {
+          character.ActionEvent += OnAction;
+      }*/
 
     private void AddQueueNumber()
     {
@@ -71,7 +72,7 @@ public class FightControler : MonoBehaviour
             _queueNumber = 0;
     }
 
-    private void RemoveQueue(Character character)
+    private void RemoveQueue(BattleCharacter character)
     {
         if (_queue.IndexOf(character) < _queueNumber)
             _queueNumber--;
@@ -142,33 +143,6 @@ public class FightControler : MonoBehaviour
         }
     }
 
-    private void AddCharacter(CharacterPlacement fromPlacement, CharacterPlacement aboutPlacement, Character character, int placeLine, int placeСolumn)
-    {
-        character.ActionEvent += OnAction;
-        character.ChangedCharacteristics();
-        _characters.Add(character);
-        _queue.Add(character);
-        _experiences.Add(character, new CharacterExperience());
-        fromPlacement.TryAddCharacter(placeLine, placeСolumn, character);
-    }
-
-    private void AddTankCharacter(CharacterPlacement fromPlacement, CharacterPlacement aboutPlacement, CharacterCharacteristics characterCharacteristics, int placeLine, int placeСolumn)
-    {
-        Character character = new TankCharacter(characterCharacteristics, fromPlacement, aboutPlacement);
-        AddCharacter(fromPlacement, aboutPlacement, character, placeLine, placeСolumn);
-    }
-
-    private void AddWariorCharacter(CharacterPlacement fromPlacement, CharacterPlacement aboutPlacement, CharacterCharacteristics characterCharacteristics, int placeLine, int placeСolumn)
-    {
-        Character character = new WariorCharacter(characterCharacteristics, fromPlacement, aboutPlacement);
-        AddCharacter(fromPlacement, aboutPlacement, character, placeLine, placeСolumn);
-    }
-
-    private void AddShooterCharacter(CharacterPlacement fromPlacement, CharacterPlacement aboutPlacement, CharacterCharacteristics characterCharacteristics, int placeLine, int placeСolumn)
-    {
-        Character character = new ShooterCharacter(characterCharacteristics, fromPlacement, aboutPlacement);
-        AddCharacter(fromPlacement, aboutPlacement, character, placeLine, placeСolumn);
-    }
 
     private void ChanceEcperienceInInspector()
     {

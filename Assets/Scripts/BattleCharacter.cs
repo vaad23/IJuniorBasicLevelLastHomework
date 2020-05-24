@@ -4,17 +4,19 @@ using UnityEngine;
 using UnityEngine.Events;
 
 
-public abstract class Character
+public abstract class BattleCharacter
 {
     private int _maxHealth;
     private int _health;
     private int _attack;
     private int _armor;
     private int _energy;
+    private BattlePlacement _battlePlacement;
 
-    private CharacterPlacement _myComand;
-    private CharacterPlacement _enemyComand;
+  //  private CharacterPlacement _myComand;
+  //  private CharacterPlacement _enemyComand;
     protected int CountTurns;
+    protected BattlePlacement BattlePlacement => _battlePlacement;
 
     public int MaxHealth { get => _maxHealth; protected set => _maxHealth = value; }
     public int Health
@@ -45,31 +47,34 @@ public abstract class Character
             ChangedCharacteristics();
         }
     }
-    public CharacterPlacement MyComand => _myComand;
-    public CharacterPlacement EnemyComand => _enemyComand;
+    public bool IsAlive => Health > 0;
+
+  //  public CharacterPlacement MyComand => _myComand;
+  //  public CharacterPlacement EnemyComand => _enemyComand;
 
     public event UnityAction<CharacterActionEvent> ActionEvent;
-    protected TargetSearch Search = new TargetSearch();
 
-    protected Character(CharacterCharacteristics character, CharacterPlacement myComand, CharacterPlacement enemyComand)
+    protected BattleCharacter(CharacterCharacteristics character, BattlePlacement battlePlacement)
     {
         _maxHealth = character.FirstLevel.Health;
         _health = character.FirstLevel.Health;
         _attack = character.FirstLevel.Attack;
         _armor = character.FirstLevel.Armor;
         _energy = character.FirstLevel.Energy;
-        
-        SetComands(myComand, enemyComand);
+
+        SetBattlePlacement(battlePlacement);
     }
 
-    public void SetComands(CharacterPlacement myComand, CharacterPlacement enemyComand)
+    public void SetBattlePlacement(BattlePlacement battlePlacement)
     {
-        _myComand = myComand;
-        _enemyComand = enemyComand;
+        _battlePlacement = battlePlacement;
     }
 
     public virtual void ActionSelection()
     {
+        if (_battlePlacement == null)
+            return;
+
         if (CountTurns < 1)
         {
             CountTurns++;
@@ -135,7 +140,7 @@ public abstract class Character
     }
 
 
-    protected virtual void TakeDamage(Character fromWhom, int attack)
+    protected virtual void TakeDamage(BattleCharacter fromWhom, int attack)
     {
         int damage = DamageCalculation(attack, Armor);
         ActionEvent?.Invoke(new CharacterActionEvent(new CharacterActionEvent.OnTarget(fromWhom, this, CharacterActionEvent.ActionOnTarget.AttackResult, Health > damage ? damage : Health)));
@@ -144,7 +149,7 @@ public abstract class Character
         Energy += 5;
     }
 
-    protected virtual void TakeHeal(Character fromWhom, int heal)
+    protected virtual void TakeHeal(BattleCharacter fromWhom, int heal)
     {
         heal = (heal + Health > MaxHealth) ? MaxHealth - Health : heal;
         Health += heal;
@@ -178,43 +183,7 @@ public abstract class Character
 }
 
 
-public class TargetSearch
-{
-    public Character FirstPosition(CharacterPlacement placement)
-    {
-        for (int i = 0; i < placement.LengthLine; i++)
-            for (int j = 0; j < placement.LengthColumn; j++)
-                if (placement.TrySearch(i, j, out Character character) && character.Health > 0)
-                    return character;
-        return null;
-    }
 
-    public List<Character> AllLivingCharacters(CharacterPlacement placement)
-    {
-        List<Character> characters = new List<Character>();
-
-        for (int i = 0; i < placement.LengthLine; i++)
-            for (int j = 0; j < placement.LengthColumn; j++)
-                if (placement.TrySearch(i, j, out Character character) && character.Health > 0)
-                    characters.Add(character);
-
-        return characters;
-    }
-
-    /* public string ToString(CharacterPlacement placement)
-     {
-         string allString = "";
-
-         for (int i = 0; i < placement.LengthLine; i++)
-         {
-             for (int j = 0; j < placement.LengthColumn; j++)
-             {
-                 allString += placement.ReturnCharacter(i, j) + " ";
-             }
-         }
-         return allString;
-     }*/
-}
 
 
 

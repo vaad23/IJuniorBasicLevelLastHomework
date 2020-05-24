@@ -111,12 +111,12 @@ public class CharacterActionEvent
 
     public class OnTarget
     {
-        public Character FromWhom { get; private set; }
-        public Character AboutWhom { get; private set; }
+        public BattleCharacter FromWhom { get; private set; }
+        public BattleCharacter AboutWhom { get; private set; }
         public ActionOnTarget OnTargetEnum { get; private set; }
         public int Value { get; private set; }
 
-        public OnTarget(Character fromWhom, Character aboutWhom, ActionOnTarget onTargetEnum, int value)
+        public OnTarget(BattleCharacter fromWhom, BattleCharacter aboutWhom, ActionOnTarget onTargetEnum, int value)
         {
             FromWhom = fromWhom;
             AboutWhom = aboutWhom;
@@ -135,10 +135,10 @@ public class CharacterActionEvent
 
     public class NoTarget
     {
-        public Character FromWhom { get; private set; }
+        public BattleCharacter FromWhom { get; private set; }
         public ActionNoTarget NoTargetEnum { get; private set; }
 
-        public NoTarget(Character fromWhom, ActionNoTarget noTargetEnum)
+        public NoTarget(BattleCharacter fromWhom, ActionNoTarget noTargetEnum)
         {
             FromWhom = fromWhom;
             NoTargetEnum = noTargetEnum;
@@ -153,11 +153,11 @@ public class CharacterActionEvent
 
     public class Experience
     {
-        public Character FromWhom { get; private set; }
+        public BattleCharacter FromWhom { get; private set; }
         public ActionExperience ExperienceEnum { get; private set; }
         public int Value { get; private set; }
 
-        public Experience(Character fromWhom, ActionExperience experienceEnum, int value)
+        public Experience(BattleCharacter fromWhom, ActionExperience experienceEnum, int value)
         {
             FromWhom = fromWhom;
             ExperienceEnum = experienceEnum;
@@ -174,10 +174,10 @@ public class CharacterActionEvent
 
     public class ChangedInfo
     {
-        public Character FromWhom { get; private set; }
+        public BattleCharacter FromWhom { get; private set; }
         public Characteristics Characteristic { get; private set; }
 
-        public ChangedInfo(Character fromWhom, Characteristics characteristic)
+        public ChangedInfo(BattleCharacter fromWhom, Characteristics characteristic)
         {
             FromWhom = fromWhom;
             Characteristic = characteristic;

@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TankCharacter : Character
+public class TankBattleCharacter : BattleCharacter
 {
-    public TankCharacter(CharacterCharacteristics character, CharacterPlacement myComand, CharacterPlacement enemyComand) : base(character, myComand, enemyComand) { }
+    public TankBattleCharacter(CharacterCharacteristics character, BattlePlacement battlePlacement) : base(character, battlePlacement) { }
 
     protected override void NormalAttack()
     {
-        Character enemy = Search.FirstPosition(EnemyComand);
+        BattleCharacter enemy = BattlePlacement.Search.FirstEnemyPositionOnMyLine(this);
         if (enemy == null)
             CreateAction(new CharacterActionEvent(new CharacterActionEvent.System(CharacterActionEvent.ActionSystem.EndGame)));
         else
@@ -22,13 +22,13 @@ public class TankCharacter : Character
 }
 
 
-public class WariorCharacter : Character
+public class WariorBattleCharacter : BattleCharacter
 {
-    public WariorCharacter(CharacterCharacteristics character, CharacterPlacement myComand, CharacterPlacement enemyComand) : base(character, myComand, enemyComand) { }
+    public WariorBattleCharacter(CharacterCharacteristics character, BattlePlacement battlePlacement) : base(character, battlePlacement) { }
 
     protected override void NormalAttack()
     {
-        Character enemy = Search.FirstPosition(EnemyComand);
+        BattleCharacter enemy = BattlePlacement.Search.FirstEnemyPositionOnMyLine(this);
         if (enemy == null)
             CreateAction(new CharacterActionEvent(new CharacterActionEvent.System(CharacterActionEvent.ActionSystem.EndGame)));
         else
@@ -37,7 +37,7 @@ public class WariorCharacter : Character
 
     protected override void SpecialAttack()
     {
-        Character enemy = Search.FirstPosition(EnemyComand);
+        BattleCharacter enemy = BattlePlacement.Search.FirstEnemyPositionOnMyLine(this);
         if (enemy == null)
             CreateAction(new CharacterActionEvent(new CharacterActionEvent.System(CharacterActionEvent.ActionSystem.EndGame)));
         else
@@ -45,13 +45,13 @@ public class WariorCharacter : Character
     }
 }
 
-public class ShooterCharacter : Character
+public class ShooterBattleCharacter : BattleCharacter
 {
-    public ShooterCharacter(CharacterCharacteristics character, CharacterPlacement myComand, CharacterPlacement enemyComand) : base(character, myComand, enemyComand) { }
+    public ShooterBattleCharacter(CharacterCharacteristics character, BattlePlacement battlePlacement) : base(character, battlePlacement) { }
 
     protected override void NormalAttack()
     {
-        Character enemy = Search.FirstPosition(EnemyComand);
+        BattleCharacter enemy = BattlePlacement.Search.FirstEnemyPositionOnMyLine(this);
         if (enemy == null)
             CreateAction(new CharacterActionEvent(new CharacterActionEvent.System(CharacterActionEvent.ActionSystem.EndGame)));
         else
@@ -60,7 +60,7 @@ public class ShooterCharacter : Character
 
     protected override void SpecialAttack()
     {
-        List<Character> enemies = Search.AllLivingCharacters(EnemyComand);
+        List<BattleCharacter> enemies = BattlePlacement.Search.AllEnemyLivingTeam(this);
         foreach (var enemy in enemies)
         {
             CreateAction(new CharacterActionEvent(new CharacterActionEvent.OnTarget(this, enemy, CharacterActionEvent.ActionOnTarget.Attack, Attack / 2)));

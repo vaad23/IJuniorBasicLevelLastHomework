@@ -7,47 +7,88 @@ public class FightControlerView : MonoBehaviour
 {
     private FightControler _fightControler;
     private List<CharacterActionEvent> _allAction;
-    private CharacterPlacement _comandA;
-    private CharacterPlacement _comandB;
-    private Dictionary<Character, FightCharacterView> _characterViews;
+    private BattlePlacement _battlePlacement;
+    private Dictionary<BattleCharacter, FightCharacterView> _characterViews;
     private float _timer;
     private int _countAction;
 
+    [SerializeField] private CharacterCharacteristics _tank;
+    [SerializeField] private CharacterCharacteristics _warior;
+    [SerializeField] private CharacterCharacteristics _shooter;
     [SerializeField] private FightCharacterView _prefabCharacter;
-    [SerializeField] private Transform parentPrefab;
+    [SerializeField] private List<SpawnPointsList> _teamASpownPoints;
+    [SerializeField] private List<SpawnPointsList> _teamBSpownPoints;
+
 
     private void Start()
     {
+        BattleCharacter character1 = new TankBattleCharacter(_tank, null);
+        BattleCharacter character2 = new WariorBattleCharacter(_warior, null);
+        BattleCharacter character3 = new WariorBattleCharacter(_warior, null);
+        BattleCharacter character4 = new TankBattleCharacter(_tank, null);
+        BattleCharacter character5 = new ShooterBattleCharacter(_shooter, null);
+        BattleCharacter character6 = new ShooterBattleCharacter(_shooter, null);
+        PlacementPosition place1 = new PlacementPosition(1, 0);
+        PlacementPosition place2 = new PlacementPosition(1, 1);
+        PlacementPosition place3 = new PlacementPosition(1, 2);
+        PlacementPosition place4 = new PlacementPosition(2, 0);
+        PlacementPosition place5 = new PlacementPosition(0, 1);
+        PlacementPosition place6 = new PlacementPosition(3, 2);
+
+        _battlePlacement = new BattlePlacement(new List<BattleCharacterPlacement>()
+                                              {
+                                                  new BattleCharacterPlacement(character1, place1),
+                                                  new BattleCharacterPlacement(character2, place2),
+                                                  new BattleCharacterPlacement(character3, place3)
+                                              },
+                                              new List<BattleCharacterPlacement>()
+                                              {
+                                                  new BattleCharacterPlacement(character4, place4),
+                                                  new BattleCharacterPlacement(character5, place5),
+                                                  new BattleCharacterPlacement(character6, place6)
+                                              });
+
+        foreach (var member in _battlePlacement.Search.AllTeam())
+        {
+            member.SetBattlePlacement(_battlePlacement);
+        }
+
+        _characterViews = new Dictionary<BattleCharacter, FightCharacterView>();
+
+        foreach (var member in _battlePlacement.Search.AllTeam())
+        {
+            //ужас
+            //надо исправить!!!!!!!!
+            PlacementPosition place = null;
+            if (member == character1)
+                place = place1;
+            else if (member == character2)
+                place = place2;
+            else if(member == character3)
+                place = place3;
+            else if (member == character4)
+                place = place4;
+            else if(member == character5)
+                place = place5;
+            else
+                place = place6;
+
+            FightSpawnPoint spawnPoint = null;
+            if (place == place1 || place == place2 || place == place3)
+                spawnPoint = _teamASpownPoints[place.Line].points[place.Column];
+            else
+                spawnPoint = _teamBSpownPoints[place.Line].points[place.Column];
+
+
+            FightCharacterView fightCharacter = Instantiate(_prefabCharacter, spawnPoint.transform);
+            _characterViews.Add(member, fightCharacter);
+        }
+
         _timer = 0;
         _fightControler = GetComponent<FightControler>();
-        _allAction = _fightControler.Fight(out _comandA, out _comandB);
-        _characterViews = new Dictionary<Character, FightCharacterView>();
 
-        for (int i = 0; i < _comandA.LengthLine; i++)
-        {
-            for (int j = 0; j < _comandA.LengthColumn; j++)
-            {
-                if (_comandA.TrySearch(i, j, out Character character))
-                {
-                    FightCharacterView fightCharacter = Instantiate(_prefabCharacter, parentPrefab);
-                    fightCharacter.transform.localPosition = new Vector3(-250 * (j + 1), 0, 0);
-                    _characterViews.Add(character, fightCharacter);
-                }                    
-            }
-        }
-
-        for (int i = 0; i < _comandB.LengthLine; i++)
-        {
-            for (int j = 0; j < _comandB.LengthColumn; j++)
-            {
-                if (_comandB.TrySearch(i, j, out Character character))
-                {
-                    FightCharacterView fightCharacter = Instantiate(_prefabCharacter, parentPrefab);
-                    fightCharacter.transform.localPosition = new Vector3(250 * (j + 1), 0, 0);
-                    _characterViews.Add(character, fightCharacter);
-                }
-            }
-        }
+        _allAction = _fightControler.Fight(_battlePlacement);
+        
 
         for (_countAction = 0; _countAction < _allAction.Count ; _countAction++)
         {
@@ -135,5 +176,12 @@ public class FightControlerView : MonoBehaviour
                 }
                 break;
         }
+    }
+
+
+    [System.Serializable]
+    public class SpawnPointsList
+    {
+        public List<FightSpawnPoint> points;
     }
 }

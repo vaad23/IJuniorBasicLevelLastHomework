@@ -4,60 +4,72 @@ using UnityEngine;
 
 public class CharacterPlacement 
 {
-    private Character[,] _placements;
+    private BattleCharacter[,] _placements;
 
     public int LengthLine => _placements.GetLength(0);
     public int LengthColumn => _placements.GetLength(1);
     
-    public CharacterPlacement(int placeLine, int placeСolumn)
+    public CharacterPlacement(PlacementPosition maxPosition)
     {
-        _placements = new Character[placeLine, placeСolumn];
+        _placements = new BattleCharacter[maxPosition.Line, maxPosition.Column];
     }
 
     public CharacterPlacement(CharacterPlacement newPlacement)
     {
-        _placements = new Character[newPlacement.LengthLine, newPlacement.LengthColumn];
+        _placements = new BattleCharacter[newPlacement.LengthLine, newPlacement.LengthColumn];
+
         for (int i = 0; i < newPlacement.LengthLine; i++)
-        {
             for (int j = 0; j < newPlacement.LengthColumn; j++)
-            {
-                _placements[i, j] = newPlacement.ReturnCharacter(i, j);
-            }
-        }
+                _placements[i, j] = newPlacement.ReturnCharacter(new PlacementPosition(i, j));
     }
 
-    public Character ReturnCharacter(int placeLine, int placeСolumn)
+    public BattleCharacter ReturnCharacter(PlacementPosition position)
     {
-        if (PlaceNotExists(placeLine, placeСolumn))
+        if (PlaceNotExists(position))
             return null;
 
-        return _placements[placeLine, placeСolumn];
+        return _placements[position.Line, position.Column];
     }
 
-    private bool PlaceNotExists(int placeLine, int placeСolumn)
+    private bool PlaceNotExists(PlacementPosition position)
     {
-        return LengthLine < placeLine || LengthColumn < placeСolumn;
+        return LengthLine < position.Line || LengthColumn < position.Column;
     }
 
-    public bool TryAddCharacter(int placeLine, int placeСolumn, Character character)
+    public bool TryAddCharacter(BattleCharacter character, PlacementPosition position)
     {
-        if (PlaceNotExists(placeLine, placeСolumn))
+        if (PlaceNotExists(position))
             return false;
 
-        _placements[placeLine, placeСolumn] = character;
+        _placements[position.Line, position.Column] = character;
         return true;
     }
 
-    public bool TrySearch(int placeLine, int placeСolumn, out Character character)
+    public bool TrySearch(out BattleCharacter character, PlacementPosition position)
     {
         character = null;
-        if (PlaceNotExists(placeLine, placeСolumn))
+        if (PlaceNotExists(position))
             return false;
 
-        if (_placements[placeLine, placeСolumn] == null)
+        if (_placements[position.Line,position.Column] == null)
             return false;
 
-        character = _placements[placeLine, placeСolumn];
+        character = _placements[position.Line, position.Column];
         return true;
+    }
+}
+
+public class PlacementPosition
+{
+    private int _line;
+    private int _column;
+
+    public int Line => _line; 
+    public int Column  => _column; 
+
+    public PlacementPosition(int line, int column)
+    {
+        _line = line;
+        _column = column;
     }
 }
