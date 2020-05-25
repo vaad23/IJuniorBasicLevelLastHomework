@@ -3,18 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-
-public abstract class BattleCharacter
+public class BattleCharacter
 {
     private int _maxHealth;
     private int _health;
     private int _attack;
     private int _armor;
     private int _energy;
+    private Skill _normalSkill;
+    private Skill _specialSkill;
     private BattlePlacement _battlePlacement;
 
-  //  private CharacterPlacement _myComand;
-  //  private CharacterPlacement _enemyComand;
     protected int CountTurns;
     protected BattlePlacement BattlePlacement => _battlePlacement;
 
@@ -47,28 +46,39 @@ public abstract class BattleCharacter
             ChangedCharacteristics();
         }
     }
-    public bool IsAlive => Health > 0;
-
-  //  public CharacterPlacement MyComand => _myComand;
-  //  public CharacterPlacement EnemyComand => _enemyComand;
+    public bool IsAlive => Health > 0;    
 
     public event UnityAction<CharacterActionEvent> ActionEvent;
 
-    protected BattleCharacter(CharacterCharacteristics character, BattlePlacement battlePlacement)
+  /*  protected BattleCharacter(DatabaseCharacterCharacteristics characteristics, BattlePlacement battlePlacement)
     {
-        _maxHealth = character.FirstLevel.Health;
-        _health = character.FirstLevel.Health;
-        _attack = character.FirstLevel.Attack;
-        _armor = character.FirstLevel.Armor;
-        _energy = character.FirstLevel.Energy;
-
+        SetCharacteristics(characteristics);
         SetBattlePlacement(battlePlacement);
+    }*/
+
+
+    public BattleCharacter(DatabaseBattleCharacter databaseBattleCharacter, DatabaseCharacterCharacteristics characteristics, BattlePlacement battlePlacement)
+    {
+        _normalSkill = databaseBattleCharacter.NormalSkill;
+        _specialSkill = databaseBattleCharacter.SpecialSkill;
+
+        SetCharacteristics(characteristics);
+        SetBattlePlacement(battlePlacement);
+    }
+
+    public void SetCharacteristics(DatabaseCharacterCharacteristics characteristics)
+    {
+        _maxHealth = characteristics.FirstLevel.Health;
+        _health = characteristics.FirstLevel.Health;
+        _attack = characteristics.FirstLevel.Attack;
+        _armor = characteristics.FirstLevel.Armor;
+        _energy = characteristics.FirstLevel.Energy;
     }
 
     public void SetBattlePlacement(BattlePlacement battlePlacement)
     {
         _battlePlacement = battlePlacement;
-    }
+    }    
 
     public virtual void ActionSelection()
     {
@@ -77,17 +87,22 @@ public abstract class BattleCharacter
 
         if (CountTurns < 1)
         {
-            CountTurns++;
-          if (Energy < 100)
-          {
-              Energy += 25;
-              NormalAttack();
-          }
-          else
-          {
-              Energy = 0;
-              SpecialAttack();
-          }
+            if (Energy < 100)
+            {
+                if (_normalSkill.Application(this, BattlePlacement))
+                {
+                    CountTurns++;
+                    Energy += 25;
+                }
+            }
+            else
+            {
+                if (_specialSkill.Application(this, BattlePlacement))
+                {
+                    CountTurns++;
+                    Energy = 0;
+                }
+            }
         }
         else
         {
@@ -156,8 +171,8 @@ public abstract class BattleCharacter
         ActionEvent?.Invoke(new CharacterActionEvent(new CharacterActionEvent.OnTarget(fromWhom, this, CharacterActionEvent.ActionOnTarget.HealResult, heal)));
     }
 
-    protected abstract void SpecialAttack();
-    protected abstract void NormalAttack();
+   /* protected abstract void SpecialAttack();
+    protected abstract void NormalAttack();*/
 
     protected int DamageCalculation(int attack, int armor)
     {
@@ -174,12 +189,10 @@ public abstract class BattleCharacter
         }
     }
 
-    protected void CreateAction(CharacterActionEvent action)
+    public void CreateAction(CharacterActionEvent action)
     {
         ActionEvent?.Invoke(action);
-    }
-
-    
+    }    
 }
 
 

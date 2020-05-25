@@ -9,11 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef8604414c6b8e042954819bef2438be, type: 3}
-  m_Name: Warior
-  m_EditorClassIdentifier: 
-  _firstLevel:
-    _health: 100
-    _attack: 20
-    _armor: 5
-    _energy: 50
+  m_Script: {fileID: 0}
+  m_Name: SpecialSkill
+  m_EditorClassIdentifier: Assembly-CSharp::HealSkillOnAttackByOneself
+  _percentageOfAttack: 100

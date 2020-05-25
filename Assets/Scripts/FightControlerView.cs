@@ -12,22 +12,41 @@ public class FightControlerView : MonoBehaviour
     private float _timer;
     private int _countAction;
 
-    [SerializeField] private CharacterCharacteristics _tank;
-    [SerializeField] private CharacterCharacteristics _warior;
-    [SerializeField] private CharacterCharacteristics _shooter;
+    [SerializeField] private Database _database;
+    [SerializeField] private DatabaseCharacterCharacteristics _tank;
+    [SerializeField] private DatabaseCharacterCharacteristics _warior;
+    [SerializeField] private DatabaseCharacterCharacteristics _shooter;
     [SerializeField] private FightCharacterView _prefabCharacter;
     [SerializeField] private List<SpawnPointsList> _teamASpownPoints;
     [SerializeField] private List<SpawnPointsList> _teamBSpownPoints;
 
-
     private void Start()
     {
-        BattleCharacter character1 = new TankBattleCharacter(_tank, null);
-        BattleCharacter character2 = new WariorBattleCharacter(_warior, null);
-        BattleCharacter character3 = new WariorBattleCharacter(_warior, null);
-        BattleCharacter character4 = new TankBattleCharacter(_tank, null);
-        BattleCharacter character5 = new ShooterBattleCharacter(_shooter, null);
-        BattleCharacter character6 = new ShooterBattleCharacter(_shooter, null);
+        /*   BattleCharacter character1 = null;// new TankBattleCharacter(_tank, null);
+           BattleCharacter character2 = null;// new WariorBattleCharacter(_warior, null);
+           BattleCharacter character3 = null;// new WariorBattleCharacter(_warior, null);
+           BattleCharacter character4 = null;// new TankBattleCharacter(_tank, null);
+           BattleCharacter character5 = null;// new ShooterBattleCharacter(_shooter, null);
+           BattleCharacter character6 = null;// new ShooterBattleCharacter(_shooter, null);
+           */
+        DatabaseCharacter databaseCharacter = _database.GetDatabaseCharacter("000001");
+        BattleCharacter character1 = new BattleCharacter(databaseCharacter.BattleCharacter, databaseCharacter.Characteristics, null);
+
+        databaseCharacter = _database.GetDatabaseCharacter("000002");
+        BattleCharacter character2 = new BattleCharacter(databaseCharacter.BattleCharacter, databaseCharacter.Characteristics, null);
+
+        databaseCharacter = _database.GetDatabaseCharacter("000002");
+        BattleCharacter character3 = new BattleCharacter(databaseCharacter.BattleCharacter, databaseCharacter.Characteristics, null);
+
+        databaseCharacter = _database.GetDatabaseCharacter("000001");
+        BattleCharacter character4 = new BattleCharacter(databaseCharacter.BattleCharacter, databaseCharacter.Characteristics, null);
+
+        databaseCharacter = _database.GetDatabaseCharacter("000003");
+        BattleCharacter character5 = new BattleCharacter(databaseCharacter.BattleCharacter, databaseCharacter.Characteristics, null);
+
+        databaseCharacter = _database.GetDatabaseCharacter("000003");
+        BattleCharacter character6 = new BattleCharacter(databaseCharacter.BattleCharacter, databaseCharacter.Characteristics, null);
+
         PlacementPosition place1 = new PlacementPosition(1, 0);
         PlacementPosition place2 = new PlacementPosition(1, 1);
         PlacementPosition place3 = new PlacementPosition(1, 2);

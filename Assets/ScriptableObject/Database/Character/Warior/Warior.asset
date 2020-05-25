@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9d6b590d0ca992489001c0ddc14e82b, type: 3}
+  m_Name: Warior
+  m_EditorClassIdentifier: 
+  _id: 000002
+  _battleCharacter: {fileID: 11400000, guid: a599d48920841194fa3279cb68ec5672, type: 2}
+  _characteristics: {fileID: 11400000, guid: b65932db331a9a44a9f36546b0e66f32, type: 2}
+  _description: {fileID: 11400000, guid: df71664fa62bbdd4f9e7fa5afb113aea, type: 2}
