@@ -11,103 +11,119 @@ public class FightControlerView : MonoBehaviour
     private Dictionary<BattleCharacter, FightCharacterView> _characterViews;
     private float _timer;
     private int _countAction;
+    private SaveBattleTeams _battleTeams;
 
     [SerializeField] private Database _database;
-    [SerializeField] private DatabaseCharacterCharacteristics _tank;
-    [SerializeField] private DatabaseCharacterCharacteristics _warior;
-    [SerializeField] private DatabaseCharacterCharacteristics _shooter;
     [SerializeField] private FightCharacterView _prefabCharacter;
     [SerializeField] private List<SpawnPointsList> _teamASpownPoints;
     [SerializeField] private List<SpawnPointsList> _teamBSpownPoints;
+    [SerializeField] private FightFinish _panelFightFinish;
 
     private void Start()
     {
-        /*   BattleCharacter character1 = null;// new TankBattleCharacter(_tank, null);
-           BattleCharacter character2 = null;// new WariorBattleCharacter(_warior, null);
-           BattleCharacter character3 = null;// new WariorBattleCharacter(_warior, null);
-           BattleCharacter character4 = null;// new TankBattleCharacter(_tank, null);
-           BattleCharacter character5 = null;// new ShooterBattleCharacter(_shooter, null);
-           BattleCharacter character6 = null;// new ShooterBattleCharacter(_shooter, null);
-           */
-        DatabaseCharacter databaseCharacter = _database.GetDatabaseCharacter("000001");
-        BattleCharacter character1 = new BattleCharacter(databaseCharacter.BattleCharacter, databaseCharacter.Characteristics, null);
+        _battleTeams = (new SaveBattleSystem()).BattleTeams;
+        _characterViews = new Dictionary<BattleCharacter, FightCharacterView>();
+        List<BattleCharacterPlacement> teamA = new List<BattleCharacterPlacement>();
+        List<BattleCharacterPlacement> teamB = new List<BattleCharacterPlacement>();
+        List<BattleCharacter> queue = new List<BattleCharacter>();
+        Dictionary<BattleCharacter, int> queueTeamA = new Dictionary<BattleCharacter, int>();
+        Dictionary<BattleCharacter, int> queueTeamB = new Dictionary<BattleCharacter, int>();
 
-        databaseCharacter = _database.GetDatabaseCharacter("000002");
-        BattleCharacter character2 = new BattleCharacter(databaseCharacter.BattleCharacter, databaseCharacter.Characteristics, null);
+        foreach (var member in _battleTeams.FightTeamA.Characters)
+        {
+            DatabaseCharacter databaseCharacter = _database.GetDatabaseCharacter(member.Id);
+            BattleCharacter character = new BattleCharacter(databaseCharacter.BattleCharacter, databaseCharacter.Characteristics, null);
+            PlacementPosition position = new PlacementPosition(member.LinePosition, member.ColumnPosition);
 
-        databaseCharacter = _database.GetDatabaseCharacter("000002");
-        BattleCharacter character3 = new BattleCharacter(databaseCharacter.BattleCharacter, databaseCharacter.Characteristics, null);
+            teamA.Add(new BattleCharacterPlacement(character, position));
+            queueTeamA.Add(character,member.PlaceInQueue);
+        }
 
-        databaseCharacter = _database.GetDatabaseCharacter("000001");
-        BattleCharacter character4 = new BattleCharacter(databaseCharacter.BattleCharacter, databaseCharacter.Characteristics, null);
+        foreach (var member in _battleTeams.FightTeamB.Characters)
+        {
+            DatabaseCharacter databaseCharacter = _database.GetDatabaseCharacter(member.Id);
+            BattleCharacter character = new BattleCharacter(databaseCharacter.BattleCharacter, databaseCharacter.Characteristics, null);
+            PlacementPosition position = new PlacementPosition(member.LinePosition, member.ColumnPosition);
 
-        databaseCharacter = _database.GetDatabaseCharacter("000003");
-        BattleCharacter character5 = new BattleCharacter(databaseCharacter.BattleCharacter, databaseCharacter.Characteristics, null);
+            teamB.Add(new BattleCharacterPlacement(character, position));
+            queueTeamB.Add(character, member.PlaceInQueue);
+        }
 
-        databaseCharacter = _database.GetDatabaseCharacter("000003");
-        BattleCharacter character6 = new BattleCharacter(databaseCharacter.BattleCharacter, databaseCharacter.Characteristics, null);
-
-        PlacementPosition place1 = new PlacementPosition(1, 0);
-        PlacementPosition place2 = new PlacementPosition(1, 1);
-        PlacementPosition place3 = new PlacementPosition(1, 2);
-        PlacementPosition place4 = new PlacementPosition(2, 0);
-        PlacementPosition place5 = new PlacementPosition(0, 1);
-        PlacementPosition place6 = new PlacementPosition(3, 2);
-
-        _battlePlacement = new BattlePlacement(new List<BattleCharacterPlacement>()
-                                              {
-                                                  new BattleCharacterPlacement(character1, place1),
-                                                  new BattleCharacterPlacement(character2, place2),
-                                                  new BattleCharacterPlacement(character3, place3)
-                                              },
-                                              new List<BattleCharacterPlacement>()
-                                              {
-                                                  new BattleCharacterPlacement(character4, place4),
-                                                  new BattleCharacterPlacement(character5, place5),
-                                                  new BattleCharacterPlacement(character6, place6)
-                                              });
+        _battlePlacement = new BattlePlacement(teamA, teamB);
 
         foreach (var member in _battlePlacement.Search.AllTeam())
         {
             member.SetBattlePlacement(_battlePlacement);
         }
 
-        _characterViews = new Dictionary<BattleCharacter, FightCharacterView>();
-
-        foreach (var member in _battlePlacement.Search.AllTeam())
+        foreach (var member in teamA)
         {
-            //ужас
-            //надо исправить!!!!!!!!
-            PlacementPosition place = null;
-            if (member == character1)
-                place = place1;
-            else if (member == character2)
-                place = place2;
-            else if(member == character3)
-                place = place3;
-            else if (member == character4)
-                place = place4;
-            else if(member == character5)
-                place = place5;
-            else
-                place = place6;
-
-            FightSpawnPoint spawnPoint = null;
-            if (place == place1 || place == place2 || place == place3)
-                spawnPoint = _teamASpownPoints[place.Line].points[place.Column];
-            else
-                spawnPoint = _teamBSpownPoints[place.Line].points[place.Column];
-
-
+            FightSpawnPoint spawnPoint =  _teamASpownPoints[member.Position.Line].points[member.Position.Column];
             FightCharacterView fightCharacter = Instantiate(_prefabCharacter, spawnPoint.transform);
-            _characterViews.Add(member, fightCharacter);
+            _characterViews.Add(member.Character, fightCharacter);
+        }
+
+        foreach (var member in teamB)
+        {
+            FightSpawnPoint spawnPoint = _teamBSpownPoints[member.Position.Line].points[member.Position.Column];
+            FightCharacterView fightCharacter = Instantiate(_prefabCharacter, spawnPoint.transform);
+            _characterViews.Add(member.Character, fightCharacter);
+        }
+
+        for (int i = 0; queueTeamA.Count>0||queueTeamB.Count>0; i++)
+        {
+            if (i % 2 == 0)
+            {
+                if (queueTeamA.Count > 0)
+                {
+                    BattleCharacter battleCharacter = null;
+                    int j = int.MaxValue;
+
+                    foreach (var key in queueTeamA.Keys)
+                    {
+                        if (queueTeamA[key] < j)
+                        {
+                            battleCharacter = key;
+                            j = queueTeamA[key];
+                        }
+                    }
+
+                    if (battleCharacter != null)
+                    {
+                        queue.Add(battleCharacter);
+                        queueTeamA.Remove(battleCharacter);
+                    }
+                }
+            }
+            else
+            {
+                if (queueTeamB.Count > 0)
+                {
+                    BattleCharacter battleCharacter = null;
+                    int j = int.MaxValue;
+
+                    foreach (var key in queueTeamB.Keys)
+                    {
+                        if (queueTeamB[key] < j)
+                        {
+                            battleCharacter = key;
+                            j = queueTeamB[key];
+                        }
+                    }
+
+                    if (battleCharacter != null)
+                    {
+                        queue.Add(battleCharacter);
+                        queueTeamB.Remove(battleCharacter);
+                    }
+                }
+            }
         }
 
         _timer = 0;
         _fightControler = GetComponent<FightControler>();
 
-        _allAction = _fightControler.Fight(_battlePlacement);
-        
+        _allAction = _fightControler.Fight(_battlePlacement, queue);
 
         for (_countAction = 0; _countAction < _allAction.Count ; _countAction++)
         {
@@ -190,7 +206,7 @@ public class FightControlerView : MonoBehaviour
                         _timer = 1f;
                         break;
                     case CharacterActionEvent.ActionSystem.EndGame:
-                        Debug.Log("EndGame");
+                        _panelFightFinish.gameObject.SetActive(true);
                         break;
                 }
                 break;

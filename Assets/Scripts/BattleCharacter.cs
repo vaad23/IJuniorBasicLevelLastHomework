@@ -14,7 +14,7 @@ public class BattleCharacter
     private Skill _specialSkill;
     private BattlePlacement _battlePlacement;
 
-    protected int CountTurns;
+    private bool _isFinishSkill;
     protected BattlePlacement BattlePlacement => _battlePlacement;
 
     public int MaxHealth { get => _maxHealth; protected set => _maxHealth = value; }
@@ -50,17 +50,11 @@ public class BattleCharacter
 
     public event UnityAction<CharacterActionEvent> ActionEvent;
 
-  /*  protected BattleCharacter(DatabaseCharacterCharacteristics characteristics, BattlePlacement battlePlacement)
-    {
-        SetCharacteristics(characteristics);
-        SetBattlePlacement(battlePlacement);
-    }*/
-
 
     public BattleCharacter(DatabaseBattleCharacter databaseBattleCharacter, DatabaseCharacterCharacteristics characteristics, BattlePlacement battlePlacement)
     {
-        _normalSkill = databaseBattleCharacter.NormalSkill;
-        _specialSkill = databaseBattleCharacter.SpecialSkill;
+        _normalSkill = databaseBattleCharacter.NormalSkill.Skill();
+        _specialSkill = databaseBattleCharacter.SpecialSkill.Skill();
 
         SetCharacteristics(characteristics);
         SetBattlePlacement(battlePlacement);
@@ -82,16 +76,20 @@ public class BattleCharacter
 
     public virtual void ActionSelection()
     {
-        if (_battlePlacement == null)
+        if (_battlePlacement == null || _normalSkill == null || _specialSkill == null)
+        {
+            _isFinishSkill = false;
+            ActionEvent?.Invoke(new CharacterActionEvent(new CharacterActionEvent.System(CharacterActionEvent.ActionSystem.EndRaund)));
             return;
+        }
 
-        if (CountTurns < 1)
+        if (!_isFinishSkill)
         {
             if (Energy < 100)
             {
                 if (_normalSkill.Application(this, BattlePlacement))
                 {
-                    CountTurns++;
+                    _isFinishSkill = true;
                     Energy += 25;
                 }
             }
@@ -99,29 +97,15 @@ public class BattleCharacter
             {
                 if (_specialSkill.Application(this, BattlePlacement))
                 {
-                    CountTurns++;
+                    _isFinishSkill = true;
                     Energy = 0;
                 }
             }
         }
         else
         {
-            CountTurns = 0;
+            _isFinishSkill = false;
             ActionEvent?.Invoke(new CharacterActionEvent(new CharacterActionEvent.System(CharacterActionEvent.ActionSystem.EndRaund)));
-        }
-    }
-
-    public virtual void ActionResult(CharacterActionEvent action)
-    {
-        if (action.Act == CharacterActionEvent.Action.OnTarget)
-        {
-            switch (action.ActOnTarget.OnTargetEnum)
-            {
-                case CharacterActionEvent.ActionOnTarget.AttackResult:
-                    break;
-                case CharacterActionEvent.ActionOnTarget.HealResult:
-                    break;
-            }
         }
     }
 
@@ -170,9 +154,7 @@ public class BattleCharacter
         Health += heal;
         ActionEvent?.Invoke(new CharacterActionEvent(new CharacterActionEvent.OnTarget(fromWhom, this, CharacterActionEvent.ActionOnTarget.HealResult, heal)));
     }
-
-   /* protected abstract void SpecialAttack();
-    protected abstract void NormalAttack();*/
+    
 
     protected int DamageCalculation(int attack, int armor)
     {

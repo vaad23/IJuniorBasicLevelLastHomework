@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class FightControler : MonoBehaviour
 {
-    [SerializeField] private FightControlerView _view;
     [SerializeField] private List<CharacterExperience> _experienceArray;
     [SerializeField] private bool _isFinishGame;
 
@@ -15,16 +14,17 @@ public class FightControler : MonoBehaviour
     private Dictionary<BattleCharacter, CharacterExperience> _experiences;
     private int _queueNumber;
 
-    public List<CharacterActionEvent> Fight(BattlePlacement battlePlacement)
+    public List<CharacterActionEvent> Fight(BattlePlacement battlePlacement, List<BattleCharacter> queue)
     {
         _experiences = new Dictionary<BattleCharacter, CharacterExperience>();
+        _queue = queue;
 
         foreach (var member in battlePlacement.Search.AllTeam())
         {
             member.ActionEvent += OnAction;
             member.ChangedCharacteristics();
             _characters.Add(member);
-            _queue.Add(member);
+           // _queue.Add(member);
             _experiences.Add(member, new CharacterExperience());
         }
 
@@ -38,7 +38,6 @@ public class FightControler : MonoBehaviour
 
             while (_actionQueue.Count > 0)
             {
-              //  Debug.Log(_actionQueue[0].ToString());
                 ActionHandler(_actionQueue[0]);
                 _actionQueue.Remove(_actionQueue[0]);
             }
@@ -50,7 +49,7 @@ public class FightControler : MonoBehaviour
             Debug.Log(action.ToString());
         }
 
-        ChanceEcperienceInInspector();
+        ChangeExperienceInInspector();
         foreach (var member in battlePlacement.Search.AllTeam())
         {
             member.ActionEvent -= OnAction;
@@ -58,12 +57,6 @@ public class FightControler : MonoBehaviour
 
         return _allAction;
     }
-        /*
-
-      private void AddCharacter(CharacterPlacement fromPlacement, CharacterPlacement aboutPlacement, BattleCharacter character, int placeLine, int placeСolumn)
-      {
-          character.ActionEvent += OnAction;
-      }*/
 
     private void AddQueueNumber()
     {
@@ -144,7 +137,7 @@ public class FightControler : MonoBehaviour
     }
 
 
-    private void ChanceEcperienceInInspector()
+    private void ChangeExperienceInInspector()
     {
         _experienceArray = new List<CharacterExperience>();
         foreach (var key in _experiences.Keys)

@@ -5,9 +5,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "BattleCharacter", menuName = "Database/New Battle Character", order = 51)]
 public class DatabaseBattleCharacter : ScriptableObject
 {
-    [SerializeField] private Skill _normalSkill;
-    [SerializeField] private Skill _specialSkill;
+    [SerializeField] private SkillDatabase _normalSkill;
+    [SerializeField] private SkillDatabase _specialSkill;
 
-    public Skill NormalSkill => _normalSkill;
-    public Skill SpecialSkill => _specialSkill;
+    public SkillDatabase NormalSkill => _normalSkill;
+    public SkillDatabase SpecialSkill => _specialSkill;
 }
